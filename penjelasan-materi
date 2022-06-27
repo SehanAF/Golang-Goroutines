@@ -1,3 +1,4 @@
+
 /**
 == Pengenalan Parallel Programming ==
 ~ Saat ini kita hidup di era multicore, dimana jarang sekali kita menggunakan prosseror yang single core.
@@ -96,5 +97,51 @@
 ~ Dalam kenyataan pembuatan aplikasi, seringnya kita akan mengirim channel ke function lain via parameter.
 ~ Sebelumnya kita tahu bahkan di Go-Lang by default, parameter adalah pass by value,artinya value akan diduplikasi lalu dikirim ke function paramter, sehingga jika kita ingin mengirim data asli, kita biasa gunakan pointer(agar pass by reference).
 ~Berbeda dengan Channel,Kita tidak perlu melakukan hal tersebut.
+
+== Channel In dan Out ==
+~ Saat kita mengirim channel sebagai parameter, isi function tersebut bisa mengirim dan menerima data dari channel tersebut.
+~ Kadang kita ingin memberi tahu terhadap function, misal bahwa channel tersebut hanya digunakan untuk mengirim data,atau hanya dapat digunakan untuk menerima data.
+~ Hal ini bisa kita lakukan di parameter dengan cara menandai apakah channel ini digunakan untuk(mengirim data) atau out(menerima data) 
+
+== Cara mengeksekusi Data ==
+~ go test -v -run=TestVariableChannel 
+
+== Range Channel ==
+~ Kadang-kadang ada kasus sebauh channel ikirm data secara terus menerus oleh pengirim.
+~ Dan kadang tidak jelas kapan channel tersebut akan berhenti menerima data.
+~ Salah satu yang bisa kita lakukan adalah dengan menggunakan perulangan range ketika menerima data dari channel.
+~ Ketika sebuah channel di close(), maka secara otomatis perulangan tersebut akan berhenti.
+~ Ini lebih sederhana pada kita melakukan pengecekan channel secara manual.
+
+== Select Channel == 
+~ Kadan ada kasus dimana kita membuat beberapa channel, dan menjalankan beberapa goroutine. 
+~ Lalu kita ingin mendapatkan data dari channel tersebut.
+~ Untuk melakukan hal tersebut, kita bisa menggunakan select channel di Go-Lang.
+~ Dengan select channel, kita bisa memilih data tercepat dari beberapa channel, jika data datang secara bersmaan di beberapa channe;, maka akan dipilih secara random.
+
+== Default Select ==
+~ Apa yang terjadi jika kita melakukan select terhadap channel yang ternyata tidak ada datanya?
+~ Maka kita akan menunggu sampai data ada.
+~ Kadang mungkin kita ingin melakukan sesuatu jika misal semua channel tidak ada datanya ketika kita melakuka select channel.
+~ Dalam select, kita bisa menambahkan default, dimana ini akan dieksekusi jika memang di semua channel yang kita select tidak ada datanya.
+
+== Race Condition ==
+= Masalah Dengan Goroutine =
+~ Saat kita menggunakan goroutine, dia tidak hanya berjalan secara concurrent, tapi bisa parallel juga, karena bisa ada beberapa thread yang berjalan secara parallel.
+~ Hal ini sangat berbahaya ketika kita melakukan manipulasi data variable yang sama oleh beberapa goroutine secara bersamaan.
+~ Hal ini bisa menyebabkan masalah yang namanya Race Condition.
+
+== Mutex (Mutual Exclusion) ==
+~ Untuk mengatasi masalah race condition tersebut, di Go-Lang terdapat sebuah struct bernama sync.Mutex
+~ Mutex bisa digunakan untuk melakukan locking dan unlocking, dimana ketika kita melakukan locking terhadap mutex, maka tidak ada yang bisa melukan locking lagi sampai kita melakukan unlock.
+~ Dengan demikian, jika ada beberapa goroutine melakukan lock terhadap Mutex, maka hanya 1 goroutine yang diperbolehkan, setelah goroutine tersebut melakukan unlock, baru goroutine selanjutnya diperbolehkan melakukan lock lagi.
+~ Ini sangat cocok sebagai solusi ketika ada masalah race condition yang sebelumnya kita hadapi.
+
+
+
+
+
+
+
 
 */
