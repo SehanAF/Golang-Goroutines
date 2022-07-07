@@ -137,7 +137,81 @@
 ~ Dengan demikian, jika ada beberapa goroutine melakukan lock terhadap Mutex, maka hanya 1 goroutine yang diperbolehkan, setelah goroutine tersebut melakukan unlock, baru goroutine selanjutnya diperbolehkan melakukan lock lagi.
 ~ Ini sangat cocok sebagai solusi ketika ada masalah race condition yang sebelumnya kita hadapi.
 
+== RWMutex (Read Write Mutex)
+~ Kadang ada kasus dimana kita ingin melakukan locking tidak hanya pada proses mengubah data, tapi juga membaca data.
+~ Kita sebenarnya bisa menggunakan mutex saja, namun masalahnya nanti akan rebutan antara proses membaca dan mengubah.
+~ Di Go-Lang telah disediakan struct RWMutex (Read Write Mutex) untuk menangani hal ini, dimana Mutex jenis ini memiliki dua lock, lock untuk Read dan lock untuk Write.
 
+== Deadlock ==
+
+~ Hati- hati saat membuat aplikasi yang parallel atau concurrent, masalah yang sering kita hadapi adalah Deadlock
+~ Deadlock adalah keadaan dimana sebuah proses goroutine saling menunggu lock sehingga tidak ada satupun goroutine yang bisa jalan.
+~ Sekarang kita coba simulasikan proses deadlock.
+
+== WaitGroup == 
+~ WaitGroup adalah itu yang bisa digunakan untuk menunggu sebuah proses selesai dilakukan.
+~ Hal ini kadang diperlukan, misal kita ingin menjalankan beberapa proses menggunakan goroutine, tapi kita ingin semua proses selesai terlebih dahulu sebelum aplikasi kita selesai.
+~ Kasus seperti ini bisa menggunakan WaitGroup.
+~ Untuk menandai bahwa ada proses goroutine, kita bisa menggunakan method Add(int), setelah proses goroutine selesai, kita bisa gunakan method Done()
+~ Untuk menunggu semua proses selesai, kta bisa menggunakan method Wait()
+
+== Once == 
+~ Once adalah fitur di Go-Lang yang bisa kita gunakan untuk memastikan bahasa sebuah function di ekseskusi hanya sekali.
+~ Jadi berapa banyak pun goroutine yang mengakses, bisa dipastikan bahwa goroutine yang pertama yang bsa mengeksekusi function nya.
+~ Goroutine yang lain akan dihiraukan, artinya function tidak akan dieksekusi lagi.
+
+== sync.Map ==
+~ Go-Lang memiliki sebuah struct bernama sync.Map
+~ Map ini mirip Go-Lang map, namun yang memberdakan, Map ini aman untuk mengunaan concurrent menggunakan goroutine.
+~ Ada beberapa function yang bisa kita gunakan di Map:
+    ~ Store(key,value) untuk menyimpan data ke Map.
+    ~ Load(key) untuk menghapus data di Map menggunakan key.
+    ~ Delete(key) untuk menghapus data di Map menggunakan key.
+    ~Range(function(key,value)) digunakan untuk melakukan iterasi seluruh data di Map.
+
+== sync.Cond ==
+~ Cond adalah implementasi locking berbasis kondisi.
+~ Cond membutuhkan Locker(bisa menggunakan Mutex atau RWMutex) untuk implementasi locking nya, namun berbeda dengan Locker biasanya, di Cond terdapat function Wait() untuk menunggu apakah perlu menunggu atau tidak.
+~ Function Signal() bisa digunakan untuk memberi tahu sebuah goroutine agar tidak perlu menunggu lagi, sedangkan function Broadcast() digunakan untuk memberi tahu semua goroutine agar tidak perlu menunggu lagi.
+~ Untuk membuat Cond, kita bisa menggunakan function sync.NewCond(Locker)
+
+== Atomic ==
+~ Go-Lang memiliki ackage yang bernama sync/atomic
+~ Atomic merupakan package yang digunakan untuk menggunakan data primitive secara aman pada proses concurrent.
+~ Contohnya sebelumnya kita telah menggunakan Mutex untuk melakukan locking ketika ingin menaikkan angka di counter. Hal ini sebenarnya bisa digunakan menggunakan Atomic package.
+~ Ada banyak sekali function di atomic package, kita bisa eksplore sendiri di halaman.
+~ https:://golang.org/pkg/sync/atomic/
+
+== Timer ==
+~ Timer adalah representasi satu kejadian.
+~ Ketika waktu timer sudah expire, maka event akan dikirim ke dalam channel.
+~ Untuk membuat Timer kita bisa menggunakan time.NewTimer(duration).
+
+== time.After
+~ Kadang kita hanya butuh channel nya saja, tidak membuatuhkan data timer nya.
+~ Untuk melakukan hal itu kita bisa menggunakan function time.After(duration)
+
+== time.AfterFun()
+~ Kadang ada kebutuhan kita ingin menjalankan sebuah function dengan delay waktu tertentu.
+~ Kita bisa memanfaatkan Timer dengan menggunakan function time.AfterFunc()
+~ Kita tidak perlu lagi menggunakan channel nya, cukup kirim kan function yang akan dipanggil ketika Timer mengirim kejadiannya.
+
+== time.Ticker == 
+~ Ticker adalah representasi kejadian yang berulang.
+~ Ketika waktu ticker sudah expire, maka event akan dikirim ke dalam channel.
+~ Untuk membuat ticker, kita bisa menggunakan time.NewTicker(duration).
+~ Untuk menghentikan ticker, kita bisa menggunakan Ticker.Stop()
+
+== time.Tick()
+~ Kadang kita tidak butuh data Ticker nya, kita hanya butuh channel nya saja.
+~ Jika demikian, kita bisa menggunakan function time.Tick(duration), function ini mengembalikan Ticker, hanya mengembalikan channel timer nya saja.
+
+== GOMAXPROCS ==
+~ Sebelumnya diawal kita sudah bahas bahwa goroutine itu sebenarnya dijalankan didalam Thread.
+~ Pertanyaannya, seberapa banyak Thread yang ada di Go-Lang ketika aplikasi kita berjalan?
+~ Untuk mengetahui berapa jumlah Thread, kita bisa menggunakan GOMAXPROCS, yaitu sebuah function di package runtime yang bisa kita gunakan untuk mengubah jumlah thread atau mengambil jumlah thread.
+~ Secara default, jumlah thread di Go-Lan itu sebanyak jumlah CPU di komputer kita.
+~ Kita juga bisa melihat berapa jumlah CPU kita dengan menggunakan function runtime.NumCpu()
 
 
 
